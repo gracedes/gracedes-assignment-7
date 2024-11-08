@@ -186,7 +186,7 @@ def hypothesis_test():
         observed_stat = intercept
         hypothesized_value = beta0
 
-    # TODO 10: Calculate p-value based on test type ---- TODO: DOUBLE CHECK LATER
+    # TODO 10: Calculate p-value based on test type
     if test_type == "two-sided":
         # Two-sided test: p-value is proportion of slopes more extreme than observed
         p_value = sum(x != observed_stat for x in simulated_stats) / S
