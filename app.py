@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 
 app = Flask(__name__)
+#TODO figure this out later
 app.secret_key = "your_secret_key_here"  # Replace with your own secret key, needed for session management
 
 
