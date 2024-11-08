@@ -186,15 +186,31 @@ def hypothesis_test():
         observed_stat = intercept
         hypothesized_value = beta0
 
-    # TODO 10: Calculate p-value based on test type
-    p_value = None
+    # TODO 10: Calculate p-value based on test type ---- TODO: DOUBLE CHECK LATER
+    if test_type == "two-sided":
+        # Two-sided test: p-value is proportion of slopes more extreme than observed
+        p_value = sum(x != observed_stat for x in simulated_stats) / S
+    elif test_type == "less":
+        # One-sided test for less than: p-value is proportion of slopes less than observed
+        p_value = sum(x < observed_stat for x in simulated_stats) / S
+    else:
+        # One-sided test for greater than: p-value is proportion of slopes greater than observed
+        p_value = sum(x > observed_stat for x in simulated_stats) / S
 
     # TODO 11: If p_value is very small (e.g., <= 0.0001), set fun_message to a fun message
-    fun_message = None
+    fun_message = "waow, that's a small p-value" if p_value <= 0.0001 else ""
 
     # TODO 12: Plot histogram of simulated statistics
     plot3_path = "static/plot3.png"
-    # Replace with code to generate and save the plot
+    plt.figure(figsize=(10, 5))
+    plt.hist(simulated_stats, bins=20, alpha=0.5, color="blue", label="Simulated Stats")
+    plt.axvline(observed_stat, color="red", linestyle="--", linewidth=1, label=f"Observed Stat: {observed_stat:.2f}")
+    plt.title("Histogram of Simulated Statistics")
+    plt.xlabel("Value")
+    plt.ylabel("Frequency")
+    plt.legend()
+    plt.savefig(plot3_path)
+    plt.close()
 
     # Return results to template
     return render_template(
@@ -210,8 +226,8 @@ def hypothesis_test():
         beta1=beta1,
         S=S,
         # TODO 13: Uncomment the following lines when implemented
-        # p_value=p_value,
-        # fun_message=fun_message,
+        p_value=p_value,
+        fun_message=fun_message,
     )
 
 @app.route("/confidence_interval", methods=["POST"])
