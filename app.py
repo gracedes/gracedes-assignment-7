@@ -6,6 +6,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 
+import scipy.stats as stats
+
 app = Flask(__name__)
 #TODO figure this out later
 app.secret_key = "your_secret_key_here"  # Replace with your own secret key, needed for session management
@@ -260,22 +262,39 @@ def confidence_interval():
         true_param = beta0
 
     # TODO 14: Calculate mean and standard deviation of the estimates
-    mean_estimate = None
-    std_estimate = None
+    mean_estimate = np.mean(estimates)
+    std_estimate = np.std(estimates)
 
     # TODO 15: Calculate confidence interval for the parameter estimate
     # Use the t-distribution and confidence_level
-    ci_lower = None
-    ci_upper = None
+    std_error = std_estimate / np.sqrt(len(estimates))
+    df = len(estimates) - 1
+    t_value = stats.t.ppf(1 - (1 - confidence_level) / 2, df)
+    margin_of_error = t_value * std_error
+
+    ci_lower = mean_estimate - margin_of_error
+    ci_upper = mean_estimate + margin_of_error
 
     # TODO 16: Check if confidence interval includes true parameter
-    includes_true = None
+    includes_true = ci_lower <= true_param <= ci_upper
 
     # TODO 17: Plot the individual estimates as gray points and confidence interval
     # Plot the mean estimate as a colored point which changes if the true parameter is included
     # Plot the confidence interval as a horizontal line
     # Plot the true parameter value
     plot4_path = "static/plot4.png"
+    plt.figure(figsize=(10, 5))
+    plt.scatter(np.arange(len(estimates)), estimates, color="gray", label="Estimates")
+    plt.axhline(mean_estimate, color="blue", linestyle="--", label="Mean Estimate")
+    plt.axhline(ci_lower, color="green", linestyle="--", label="Confidence Interval")
+    plt.axhline(ci_upper, color="green", linestyle="--")
+    plt.axhline(true_param, color="red", linestyle="--", label="True Parameter")
+    plt.xlabel("Simulation")
+    plt.ylabel("Value")
+    plt.title("Estimates and Confidence Interval")
+    plt.legend()
+    plt.savefig(plot4_path)
+    plt.close()
     # Write code here to generate and save the plot
 
     # Return results to template
